@@ -28,7 +28,9 @@ test:
 ## lint: Run shellcheck on all shell sources
 lint:
 	@echo "Running shellcheck..."
-	@shellcheck --rcfile=.shellcheckrc $(SHELL_SOURCES)
+	@shellcheck --shell=bash --enable=all \
+		--exclude=SC2034,SC1091,SC2154,SC2312 \
+		$(SHELL_SOURCES)
 	@echo "shellcheck passed."
 
 ## clean: Remove generated/temp files
