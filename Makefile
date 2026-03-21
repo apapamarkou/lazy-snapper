@@ -1,0 +1,42 @@
+PREFIX     ?= $(HOME)/.local
+INSTALL_DIR = $(PREFIX)/share/lazy-snapper
+BIN_DIR     = $(PREFIX)/bin
+
+SHELL_SOURCES := bin/lazy-snapper lib/core.sh lib/snapper.sh lib/ui.sh lib/utils.sh \
+                 install.sh uninstall.sh tests/test_core.sh tests/test_snapper.sh
+
+.PHONY: all install uninstall test lint clean help
+
+all: help
+
+## install: Install lazy-snapper to $(PREFIX)
+install:
+	@bash install.sh
+
+## uninstall: Remove lazy-snapper from $(PREFIX)
+uninstall:
+	@bash uninstall.sh
+
+## test: Run the test suite
+test:
+	@echo "Running tests..."
+	@bash tests/test_core.sh
+	@bash tests/test_snapper.sh
+	@echo ""
+	@echo "All tests passed."
+
+## lint: Run shellcheck on all shell sources
+lint:
+	@echo "Running shellcheck..."
+	@shellcheck --rcfile=.shellcheckrc $(SHELL_SOURCES)
+	@echo "shellcheck passed."
+
+## clean: Remove generated/temp files
+clean:
+	@find . -name '*.swp' -delete
+	@find . -name '*~' -delete
+	@echo "Clean."
+
+## help: Show this help
+help:
+	@grep -E '^## ' Makefile | sed 's/## /  /'

@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+# lazy-snapper — fzf TUI wrapper for snapper Btrfs snapshot management
+# License: GPL-3.0  |  https://github.com/apapamarkou/lazy-snapper
+
+set -euo pipefail
+
+# ── Resolve library directory ─────────────────────────────────────────────
+
+_self="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LAZY_LIBDIR="$(cd "${_self}/../lib" && pwd)"
+LAZY_BIN="${_self}/lazy-snapper"
+export LAZY_LIBDIR LAZY_BIN
+
+# ── Source modules ────────────────────────────────────────────────────────
+
+# shellcheck source=../lib/utils.sh
+source "${LAZY_LIBDIR}/utils.sh"
+# shellcheck source=../lib/core.sh
+source "${LAZY_LIBDIR}/core.sh"
+# shellcheck source=../lib/snapper.sh
+source "${LAZY_LIBDIR}/snapper.sh"
+# shellcheck source=../lib/ui.sh
+source "${LAZY_LIBDIR}/ui.sh"
+
+# ── CLI argument handling ─────────────────────────────────────────────────
+
+usage() {
+    cat <<EOF
+Usage: lazy-snapper [OPTIONS]
+
+A fast, user-friendly TUI for managing Btrfs snapshots via snapper.
+
+Options:
+  -c, --config <name>   Use a specific snapper config (default: system)
+  -d, --debug           Enable debug output
+  -v, --version         Print version and exit
+  -h, --help            Show this help message
+
+Environment variables:
+  LAZY_SNAPPER_CONFIG   Snapper config name
+  LAZY_PAGER            Pager for diff output (default: less)
+  LAZY_DEBUG            Set to 1 to enable debug logging
+
+Config file: ~/.config/lazy-snapper/config
+EOF
+}
+
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -c|--config)
+                [[ -z "${2:-}" ]] && { log_error "--config requires an argument"; exit 1; }
+                LAZY_SNAPPER_CONFIG="$2"; shift 2 ;;
+            -d|--debug)
+                LAZY_DEBUG=1; shift ;;
+            -v|--version)
+                echo "lazy-snapper ${LAZY_VERSION}"; exit 0 ;;
+            -h|--help)
+                usage; exit 0 ;;
+            # Internal subcommands called by fzf bindings
+            __preview__)
+                snapper_get_info "${2:-}"; exit 0 ;;
+            __list__)
+                snapper_list_formatted; exit 0 ;;
+            __create__)
+                ui_create; exit 0 ;;
+            *)
+                log_error "Unknown option: $1"; usage; exit 1 ;;
+        esac
+    done
+}
+
+# ── Entry point ───────────────────────────────────────────────────────────
+
+main() {
+    parse_args "$@"
+    bootstrap
+    check_dependencies
+    main_menu
+}
+
+main "$@"

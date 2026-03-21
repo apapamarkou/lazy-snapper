@@ -1,0 +1,11 @@
+# shellcheck configuration
+shell=bash
+enable=all
+# SC2034: unused variables (common in sourced libs)
+disable=SC2034
+# SC1091: not following sourced files (paths resolved at runtime)
+disable=SC1091
+# SC2154: variable referenced but not assigned (assigned in sourced modules)
+disable=SC2154
+# SC2312: subshell masking return value (intentional use of || true pattern)
+disable=SC2312

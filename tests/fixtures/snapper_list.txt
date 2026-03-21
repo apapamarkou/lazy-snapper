@@ -1,0 +1,7 @@
+ # │ Type   │ Pre # │ Date                │ User │ Cleanup  │ Description           
+───┼────────┼───────┼─────────────────────┼──────┼──────────┼───────────────────────
+ 0 │ single │       │                     │ root │          │ current               
+ 1 │ single │       │ 2024-01-10 08:00:00 │ root │ number   │ pre-update            
+ 2 │ pre    │       │ 2024-01-11 09:15:00 │ root │ number   │ before pacman         
+ 3 │ post   │ 2     │ 2024-01-11 09:16:00 │ root │ number   │ after pacman          
+ 4 │ single │       │ 2024-01-12 14:30:00 │ root │          │ manual backup         

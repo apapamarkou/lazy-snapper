@@ -1,0 +1,23 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install fzf
+        run: sudo apt-get install -y fzf
+
+      - name: Install snapper (best-effort)
+        run: sudo apt-get install -y snapper || echo "snapper not available — tests use mocks"
+
+      - name: Run tests
+        run: make test
