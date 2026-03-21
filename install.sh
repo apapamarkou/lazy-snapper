@@ -40,7 +40,7 @@ chmod +x "${INSTALL_DIR}/bin/lazy-snapper"
 
 # ── Symlink binary ────────────────────────────────────────────────────────
 
-ln -sf "${INSTALL_DIR}/bin/lazy-snapper" "${BIN_DIR}/lazy-snapper"
+ln -sf "${INSTALL_DIR}/bin/lazy-snapper" "${BIN_DIR}/snapshots"
 _green "  ✓ Installed to ${INSTALL_DIR}"
 _green "  ✓ Symlinked to ${BIN_DIR}/lazy-snapper"
 
