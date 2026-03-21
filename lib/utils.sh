@@ -18,7 +18,7 @@ log_info()  { echo -e "${C_CYAN}[INFO]${C_RESET}  $*"; }
 log_ok()    { echo -e "${C_GREEN}[OK]${C_RESET}    $*"; }
 log_warn()  { echo -e "${C_YELLOW}[WARN]${C_RESET}  $*" >&2; }
 log_error() { echo -e "${C_RED}[ERROR]${C_RESET} $*" >&2; }
-log_debug() { [[ "${LAZY_DEBUG:-0}" == "1" ]] && echo -e "${C_DIM}[DEBUG] $*${C_RESET}" >&2 || true; }
+log_debug() { [[ "${LAZY_DEBUG:-0}" == "1" ]] && echo -e "${C_DIM}[DEBUG] $*${C_RESET}" >&2; return 0; }
 
 # ── Prompts ───────────────────────────────────────────────────────────────
 
