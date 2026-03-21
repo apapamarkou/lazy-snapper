@@ -6,7 +6,7 @@ set -euo pipefail
 
 # ── Resolve library directory ─────────────────────────────────────────────
 
-_self="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+_self="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")" )" && pwd)"
 LAZY_LIBDIR="$(cd "${_self}/../lib" && pwd)"
 LAZY_BIN="${_self}/lazy-snapper"
 export LAZY_LIBDIR LAZY_BIN
