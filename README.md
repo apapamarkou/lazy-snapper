@@ -6,16 +6,24 @@ A fast, user-friendly terminal UI (TUI) for managing Btrfs snapshots via [snappe
 ┌─────────────────────────────────────────────────────────────────┐
 │  lazy-snapper v1.0.0                                            │
 │                                                                 │
-│    Browse & Manage  — Select and manage existing snapshots      │
-│  ▶ Create           — Take a new snapshot now                   │
-│    Quit             — Exit lazy-snapper                         │
+│  Step 1 — Pick a snapper config:                                │
+│  ▶ system                                                       │
+│    home                                                         │
+│                                                                 │
+│  Step 2 — Browse & Manage snapshots (newest first):            │
+│    4     │ 2024-01-12 14:30:00 │ single │ manual backup        │
+│  ▶ 3     │ 2024-01-11 09:16:00 │ post   │ after pacman         │
+│    2     │ 2024-01-11 09:15:00 │ pre    │ before pacman        │
+│    1     │ 2024-01-10 08:00:00 │ single │ pre-update           │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ## Features
 
-- Browse snapshots with live preview (number, date, type, description, disk usage)
+- Config picker on launch — choose which snapper config to manage
+- Browse snapshots newest-first with live preview (number, date, type, description, disk usage)
+- Create snapshots inline with `Ctrl+N` — list reloads automatically
 - Create, delete, and modify snapshots interactively
 - **Revert changes** (not just "restore") with a clear warning before any destructive action
 - Diff snapshot vs current state via `snapper status`
@@ -61,7 +69,7 @@ export PATH="$HOME/.local/bin:$PATH"
 lazy-snapper [OPTIONS]
 
 Options:
-  -c, --config <name>   Use a specific snapper config (default: system)
+  -c, --config <name>   Skip config picker, use this snapper config directly
   -d, --debug           Enable debug output
   -v, --version         Print version and exit
   -h, --help            Show this help
@@ -73,6 +81,7 @@ Options:
 |-----|--------|
 | `↑` / `↓` | Navigate list |
 | `Enter` | Select / confirm |
+| `Ctrl+N` | Create a new snapshot (in Browse & Manage) |
 | `Ctrl+R` | Reload snapshot list |
 | `Ctrl+C` / `Esc` | Cancel / go back |
 
@@ -81,17 +90,21 @@ Options:
 A default config is written to `~/.config/lazy-snapper/config` on first install:
 
 ```bash
-# Snapper config name
-LAZY_SNAPPER_CONFIG=system
+# Snapper config name (leave unset to show picker on launch)
+# LAZY_SNAPPER_CONFIG=system
 
 # Pager for diff output
-LAZY_PAGER=less
+# LAZY_PAGER=less
 
 # Enable debug logging
-LAZY_DEBUG=0
+# LAZY_DEBUG=0
 ```
 
-All options can also be set as environment variables.
+All options can also be set as environment variables:
+
+```bash
+LAZY_SNAPPER_CONFIG=home LAZY_DEBUG=1 lazy-snapper
+```
 
 ## Uninstall
 
