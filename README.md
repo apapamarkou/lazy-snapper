@@ -46,7 +46,7 @@ A fast, user-friendly terminal UI (TUI) for managing Btrfs snapshots via [snappe
 ### One-liner
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/apapamarkou/lazy-snapper/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/apapamarkou/lazy-snapper/main/install | bash
 ```
 
 ### Manual
@@ -111,7 +111,7 @@ LAZY_SNAPPER_CONFIG=home LAZY_DEBUG=1 lazy-snapper
 ```bash
 make uninstall
 # or
-bash uninstall.sh
+bash uninstall
 ```
 
 ## License

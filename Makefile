@@ -3,7 +3,7 @@ INSTALL_DIR = $(PREFIX)/share/lazy-snapper
 BIN_DIR     = $(PREFIX)/bin
 
 SHELL_SOURCES := bin/lazy-snapper lib/core.sh lib/snapper.sh lib/ui.sh lib/utils.sh \
-                 install.sh uninstall.sh tests/test_core.sh tests/test_snapper.sh
+                 install uninstall tests/test_core.sh tests/test_snapper.sh
 
 .PHONY: all install uninstall test lint clean help
 
@@ -11,11 +11,11 @@ all: help
 
 ## install: Install lazy-snapper to $(PREFIX)
 install:
-	@bash install.sh
+	@bash install
 
 ## uninstall: Remove lazy-snapper from $(PREFIX)
 uninstall:
-	@bash uninstall.sh
+	@bash uninstall
 
 ## test: Run the test suite
 test:

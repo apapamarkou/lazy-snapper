@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh — Install lazy-snapper to ~/.local
+# install — Install lazy-snapper to ~/.local
 
 set -euo pipefail
 

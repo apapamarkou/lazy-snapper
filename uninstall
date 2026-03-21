@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# uninstall.sh — Remove lazy-snapper from ~/.local
+# uninstall — Remove lazy-snapper from ~/.local
 
 set -euo pipefail
 
