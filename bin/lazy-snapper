@@ -50,7 +50,9 @@ parse_args() {
         case "$1" in
             -c|--config)
                 [[ -z "${2:-}" ]] && { log_error "--config requires an argument"; exit 1; }
-                LAZY_SNAPPER_CONFIG="$2"; shift 2 ;;
+                LAZY_SNAPPER_CONFIG="$2"
+                export LAZY_SNAPPER_CONFIG
+                shift 2 ;;
             -d|--debug)
                 LAZY_DEBUG=1; shift ;;
             -v|--version)

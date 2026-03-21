@@ -73,7 +73,7 @@ export LAZY_LIBDIR
 # Pre-set LAZY_CONFIG_FILE to avoid loading real config
 LAZY_CONFIG_FILE="/tmp/lazy-snapper-no-config-$$"
 
-resolve_sudo() { SUDO_CMD=""; readonly SUDO_CMD; }
+resolve_sudo() { export SUDO_CMD=""; }
 
 # shellcheck source=../lib/utils.sh
 source "${LAZY_LIBDIR}/utils.sh"

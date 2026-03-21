@@ -45,6 +45,7 @@ pick_config() {
     count=$(echo "${configs}" | wc -l)
     if [[ "${count}" -eq 1 ]]; then
         LAZY_SNAPPER_CONFIG=$(echo "${configs}" | tr -d '[:space:]')
+        export LAZY_SNAPPER_CONFIG
         return 0
     fi
 
@@ -62,6 +63,7 @@ pick_config() {
     ) || return 1
 
     LAZY_SNAPPER_CONFIG=$(echo "${chosen}" | tr -d '[:space:]')
+    export LAZY_SNAPPER_CONFIG
 }
 
 # ── Snapshot browser ──────────────────────────────────────────────────────

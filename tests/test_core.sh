@@ -38,7 +38,7 @@ LAZY_LIBDIR="${REPO_ROOT}/lib"
 export LAZY_LIBDIR
 
 # Stub resolve_sudo so sourcing utils.sh doesn't fail in CI
-resolve_sudo() { SUDO_CMD=""; readonly SUDO_CMD; }
+resolve_sudo() { export SUDO_CMD=""; }
 
 # Pre-set LAZY_CONFIG_FILE so core.sh doesn't load a real config
 LAZY_CONFIG_FILE="/tmp/lazy-snapper-no-config-$$"

@@ -67,12 +67,16 @@ check_dependencies() {
     fi
 }
 
-# Resolve sudo prefix (empty when already root)
+# Resolve sudo prefix (empty when already root).
+# Skips re-assignment if SUDO_CMD is already exported (e.g. in fzf subprocesses).
 resolve_sudo() {
+    if [[ -n "${SUDO_CMD+set}" ]]; then
+        return 0
+    fi
     if [[ "${EUID}" -eq 0 ]]; then
         SUDO_CMD=""
     else
         SUDO_CMD="sudo"
     fi
-    readonly SUDO_CMD
+    export SUDO_CMD
 }
