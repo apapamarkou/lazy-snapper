@@ -5,7 +5,14 @@ set -euo pipefail
 
 INSTALL_DIR="${HOME}/.local/share/lazy-snapper"
 BIN_DIR="${HOME}/.local/bin"
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_URL="https://github.com/apapamarkou/lazy-snapper"
+
+# Detect if running via pipe (no local repo)
+if [[ -n "${BASH_SOURCE[0]:-}" && "${BASH_SOURCE[0]}" != "bash" ]]; then
+    REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+else
+    REPO_ROOT=""
+fi
 
 _green()  { echo -e "\033[0;32m$*\033[0m"; }
 _yellow() { echo -e "\033[0;33m$*\033[0m"; }
@@ -18,8 +25,16 @@ echo ""
 
 mkdir -p "${INSTALL_DIR}" "${BIN_DIR}"
 
-cp -r "${REPO_ROOT}/bin" "${INSTALL_DIR}/"
-cp -r "${REPO_ROOT}/lib" "${INSTALL_DIR}/"
+if [[ -n "${REPO_ROOT}" ]]; then
+    cp -r "${REPO_ROOT}/bin" "${INSTALL_DIR}/"
+    cp -r "${REPO_ROOT}/lib" "${INSTALL_DIR}/"
+else
+    _yellow "  Cloning repository..."
+    git clone --depth=1 "${REPO_URL}" "${INSTALL_DIR}" 2>/dev/null || {
+        rm -rf "${INSTALL_DIR}"
+        git clone --depth=1 "${REPO_URL}" "${INSTALL_DIR}"
+    }
+fi
 
 chmod +x "${INSTALL_DIR}/bin/lazy-snapper"
 
