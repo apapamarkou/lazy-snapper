@@ -55,7 +55,6 @@ case "\${1:-}" in
     create)     echo "Created snapshot." ;;
     delete)     echo "Deleted snapshot \${2:-}." ;;
     modify)     echo "Modified snapshot." ;;
-    undochange) echo "Reverted changes." ;;
     status)     echo "M /etc/fstab"; echo "M /etc/hostname" ;;
     *)          echo "mock snapper: unknown command '\$1'" >&2; exit 1 ;;
 esac

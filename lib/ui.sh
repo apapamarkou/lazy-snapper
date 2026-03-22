@@ -108,7 +108,6 @@ action_menu() {
     local actions=(
         "  Info          — View full snapshot details"
         "  Diff          — Show changed files vs current"
-        "⚠  Revert        — Revert system changes to this snapshot"
         "  Modify        — Edit snapshot description"
         "  Delete        — Delete this snapshot"
         "  Back          — Return to snapshot list"
@@ -131,7 +130,6 @@ action_menu() {
     case "${choice}" in
         *Info*)   ui_show_info "${snap_num}" ;;
         *Diff*)   ui_diff      "${snap_num}" ;;
-        *Revert*) ui_revert    "${snap_num}" ;;
         *Modify*) ui_modify    "${snap_num}" ;;
         *Delete*) ui_delete    "${snap_num}" ;;
         *Back*|*) return 0 ;;
@@ -152,24 +150,6 @@ ui_show_info() {
 ui_diff() {
     local snap_num="$1"
     snapper_diff "${snap_num}"
-}
-
-ui_revert() {
-    local snap_num="$1"
-    clear
-    echo -e "${C_BOLD}${C_RED}═══ REVERT CHANGES ═══${C_RESET}\n"
-    snapper_get_info "${snap_num}"
-
-    echo -e "\n${C_RED}${C_BOLD}⚠  WARNING: This will revert your system to the state of snapshot #${snap_num}.${C_RESET}"
-    echo -e "${C_RED}   Files created or modified after this snapshot may be lost.${C_RESET}\n"
-
-    if confirm_action "Revert all changes made after snapshot #${snap_num}?"; then
-        if snapper_revert "${snap_num}"; then
-            show_success "System reverted to snapshot #${snap_num}. A reboot may be required."
-        else
-            show_error "Failed to revert changes. Check snapper logs."
-        fi
-    fi
 }
 
 ui_delete() {

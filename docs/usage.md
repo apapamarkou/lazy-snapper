@@ -51,27 +51,9 @@ After pressing `Enter` on a snapshot:
 |--------|-------------|
 | Info | Full snapshot details (number, date, type, user, disk usage, description) |
 | Diff | Show files changed between this snapshot and the current state |
-| ⚠ Revert | Revert all changes made after this snapshot (destructive — requires confirmation) |
 | Modify | Edit the snapshot description |
 | Delete | Permanently delete the snapshot (requires confirmation) |
 | Back | Return to the snapshot list |
-
-## Revert Changes
-
-The **Revert** action calls `snapper undochange <num>..0`, which reverts the working filesystem to the state captured in the snapshot.
-
-You will see:
-
-```
-⚠  WARNING: This will revert your system to the state of snapshot #N.
-   Files created or modified after this snapshot may be lost.
-
-Confirm? [y/N]:
-```
-
-Type `y` to proceed or `n` / `Enter` to cancel.
-
-> A reboot may be required for some changes (e.g. kernel, bootloader) to take effect.
 
 ## Creating a Snapshot
 

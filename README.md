@@ -25,7 +25,6 @@ A fast, user-friendly terminal UI (TUI) for managing Btrfs snapshots via [snappe
 - Browse snapshots newest-first with live preview (number, date, type, description, disk usage)
 - Create snapshots inline with `Ctrl+N` — list reloads automatically
 - Create, delete, and modify snapshots interactively
-- **Revert changes** (not just "restore") with a clear warning before any destructive action
 - Diff snapshot vs current state via `snapper status`
 - Catppuccin-themed fzf UI with colored output
 - Config file + environment variable overrides

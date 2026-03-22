@@ -101,11 +101,6 @@ snapper_delete() {
     _snapper delete "${num}"
 }
 
-snapper_revert() {
-    local num="$1"
-    _snapper undochange "${num}..0"
-}
-
 snapper_modify_desc() {
     local num="$1" desc="$2"
     _snapper modify -d "${desc}" "${num}"
