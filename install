@@ -55,7 +55,23 @@ if ! echo "${PATH}" | grep -q "${BIN_DIR}"; then
     echo ""
 fi
 
-# ── Config scaffold ───────────────────────────────────────────────────────
+# ── Desktop entry ───────────────────────────────────────────────────────
+
+DESKTOP_DIR="${HOME}/.local/share/applications"
+mkdir -p "${DESKTOP_DIR}"
+cat > "${DESKTOP_DIR}/lazy-snapper.desktop" <<EOF
+[Desktop Entry]
+Name=Lazy Snapper
+Comment=Manage Btrfs snapshots via snapper
+Exec=${BIN_DIR}/snapshots
+Icon=utilities-terminal
+Terminal=true
+Type=Application
+Categories=System;
+EOF
+_green "  ✓ Desktop entry written to ${DESKTOP_DIR}/lazy-snapper.desktop"
+
+# ── Config scaffold ─────────────────────────────────────────────────────────
 
 CONFIG_DIR="${XDG_CONFIG_HOME:-${HOME}/.config}/lazy-snapper"
 CONFIG_FILE="${CONFIG_DIR}/config"

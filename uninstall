@@ -5,6 +5,7 @@ set -euo pipefail
 
 INSTALL_DIR="${HOME}/.local/share/lazy-snapper"
 BIN_LINK="${HOME}/.local/bin/lazy-snapper"
+DESKTOP_FILE="${HOME}/.local/share/applications/lazy-snapper.desktop"
 
 _green()  { echo -e "\033[0;32m$*\033[0m"; }
 _yellow() { echo -e "\033[0;33m$*\033[0m"; }
@@ -25,6 +26,13 @@ if [[ -d "${INSTALL_DIR}" ]]; then
     _green "  ✓ Removed install dir: ${INSTALL_DIR}"
 else
     _yellow "  – Install dir not found: ${INSTALL_DIR}"
+fi
+
+if [[ -f "${DESKTOP_FILE}" ]]; then
+    rm -f "${DESKTOP_FILE}"
+    _green "  ✓ Removed desktop entry: ${DESKTOP_FILE}"
+else
+    _yellow "  – Desktop entry not found: ${DESKTOP_FILE}"
 fi
 
 echo ""
