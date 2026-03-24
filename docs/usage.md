@@ -58,6 +58,7 @@ A live preview panel on the right shows full details for the highlighted snapsho
 | `Enter` | Open action menu for selected snapshot |
 | `Ctrl+N` | Create a new snapshot inline (list reloads automatically) |
 | `Ctrl+R` | Reload snapshot list |
+| `Ctrl+T` | Configure timeline snapshots for the current config |
 | `Ctrl+C` / `Esc` | Exit back to config picker |
 
 ## Action Menu
@@ -71,6 +72,21 @@ After pressing `Enter` on a snapshot:
 | Modify | Edit the snapshot description |
 | Delete | Permanently delete the snapshot (requires confirmation) |
 | Back | Return to the snapshot list |
+
+## Timeline Configuration
+
+Press `Ctrl+T` from the Browse & Manage list to configure automatic timeline snapshots for the current config. You will be prompted to edit:
+
+| Setting | Description |
+|---------|-------------|
+| `TIMELINE_CREATE` | Enable (`yes`) or disable (`no`) automatic timeline snapshots |
+| `TIMELINE_LIMIT_HOURLY` | Number of hourly snapshots to keep |
+| `TIMELINE_LIMIT_DAILY` | Number of daily snapshots to keep |
+| `TIMELINE_LIMIT_WEEKLY` | Number of weekly snapshots to keep |
+| `TIMELINE_LIMIT_MONTHLY` | Number of monthly snapshots to keep |
+| `TIMELINE_LIMIT_YEARLY` | Number of yearly snapshots to keep |
+
+Current values are pre-filled. Press Enter to keep a value unchanged. Changes are applied with `snapper set-config`.
 
 ## Creating a Snapshot
 

@@ -96,13 +96,13 @@ browse_and_manage() {
     local header_text
     header_text=$(printf '%s\n%s\n%s\n%s' \
         "$(_header)" \
-        "  Config: ${LAZY_SNAPPER_CONFIG} - [Ctrl-N] new  [Ctrl-R] reload" \
+        "  Config: ${LAZY_SNAPPER_CONFIG} - [Ctrl-N] new  [Ctrl-R] reload  [Ctrl-T] timeline" \
         "" \
         "#     │ Date/Time                       │ Type   │ Description    ")
 
     while true; do
-        local selected
-        selected=$(
+        local output key selected
+        output=$(
             snapper_list_formatted | fzf \
                 "${_FZF_COMMON[@]}" \
                 --tac \
@@ -113,8 +113,17 @@ browse_and_manage() {
                 --preview-window="right:45%:wrap" \
                 --bind="ctrl-r:reload(bash ${LAZY_BIN} __list__)" \
                 --bind="ctrl-n:execute(bash ${LAZY_BIN} __create__)+reload(bash ${LAZY_BIN} __list__)" \
+                --expect=ctrl-t \
                 --no-multi
         ) || return 0
+
+        key=$(echo "${output}"    | head -1)
+        selected=$(echo "${output}" | tail -n +2)
+
+        if [[ "${key}" == "ctrl-t" ]]; then
+            ui_timeline || true
+            continue
+        fi
 
         local snap_num
         snap_num=$(echo "${selected}" | awk '{print $1}')
@@ -235,6 +244,96 @@ ui_modify() {
             show_error "Failed to update description."
         fi
     fi
+}
+
+ui_timeline() {
+    local raw enabled hourly daily weekly monthly yearly
+
+    _tl_load() {
+        raw=$(snapper_get_timeline)
+        _get_val() { echo "${raw}" | grep "^${1}=" | cut -d= -f2- | tr -d '[:space:]' | grep -oE '[0-9]+|yes|no' | head -1; }
+        enabled=$(  _get_val TIMELINE_CREATE);        [[ -z "${enabled}"  ]] && enabled=yes
+        hourly=$(   _get_val TIMELINE_LIMIT_HOURLY);  [[ -z "${hourly}"   ]] && hourly=8
+        daily=$(    _get_val TIMELINE_LIMIT_DAILY);   [[ -z "${daily}"    ]] && daily=6
+        weekly=$(   _get_val TIMELINE_LIMIT_WEEKLY);  [[ -z "${weekly}"   ]] && weekly=0
+        monthly=$(  _get_val TIMELINE_LIMIT_MONTHLY); [[ -z "${monthly}"  ]] && monthly=11
+        yearly=$(   _get_val TIMELINE_LIMIT_YEARLY);  [[ -z "${yearly}"   ]] && yearly=1
+    }
+
+    _tl_items() {
+        if [[ "${enabled}" == "yes" ]]; then
+            echo "  ●  Disable timeline snapshots"
+            echo "  Hourly   │ ${hourly}"
+            echo "  Daily    │ ${daily}"
+            echo "  Weekly   │ ${weekly}"
+            echo "  Monthly  │ ${monthly}"
+            echo "  Yearly   │ ${yearly}"
+        else
+            echo "  ○  Enable timeline snapshots"
+        fi
+    }
+
+    _tl_load
+
+    while true; do
+        local header_text
+        header_text=$(printf '%s\n%s' "$(_header)" "  Timeline — Config: ${LAZY_SNAPPER_CONFIG}")
+
+        local choice
+        choice=$(
+            _tl_items | fzf \
+                "${_FZF_COMMON[@]}" \
+                --header="${header_text}" \
+                --prompt="  Timeline > " \
+                --no-multi \
+                --no-preview
+        ) || return 0
+
+        case "${choice}" in
+            *Enable*)
+                if snapper_set_timeline "TIMELINE_CREATE=yes"; then
+                    enabled=yes
+                else
+                    show_error "Failed to enable timeline."
+                fi
+                ;;
+            *Disable*)
+                if snapper_set_timeline "TIMELINE_CREATE=no"; then
+                    enabled=no
+                else
+                    show_error "Failed to disable timeline."
+                fi
+                ;;
+            *Hourly*|*Daily*|*Weekly*|*Monthly*|*Yearly*)
+                local key label current new_val
+                case "${choice}" in
+                    *Hourly*)  key=TIMELINE_LIMIT_HOURLY;  label=Hourly;  current=${hourly} ;;
+                    *Daily*)   key=TIMELINE_LIMIT_DAILY;   label=Daily;   current=${daily} ;;
+                    *Weekly*)  key=TIMELINE_LIMIT_WEEKLY;  label=Weekly;  current=${weekly} ;;
+                    *Monthly*) key=TIMELINE_LIMIT_MONTHLY; label=Monthly; current=${monthly} ;;
+                    *Yearly*)  key=TIMELINE_LIMIT_YEARLY;  label=Yearly;  current=${yearly} ;;
+                    *)         continue ;;
+                esac
+                clear
+                printf "\n\n  %s snapshots to keep (current: %s): " "${label}" "${current}"
+                read -r new_val < /dev/tty
+                [[ -z "${new_val}" ]] && new_val=${current}
+                if snapper_set_timeline "${key}=${new_val}"; then
+                    case "${key}" in
+                        *HOURLY*)  hourly=${new_val} ;;
+                        *DAILY*)   daily=${new_val} ;;
+                        *WEEKLY*)  weekly=${new_val} ;;
+                        *MONTHLY*) monthly=${new_val} ;;
+                        *YEARLY*)  yearly=${new_val} ;;
+                        *)         ;;
+                    esac
+                else
+                    show_error "Failed to update ${key}."
+                fi
+                ;;
+            *) ;;
+        esac
+    done
 }
 
 # ── Main TUI loop ─────────────────────────────────────────────────────────

@@ -92,6 +92,7 @@ Options:
 | `Enter` | Select / confirm |
 | `Ctrl+N` | Create a new snapshot (in Browse & Manage) |
 | `Ctrl+R` | Reload snapshot list |
+| `Ctrl+T` | Configure timeline snapshots |
 | `Ctrl+C` / `Esc` | Cancel / go back |
 
 ## Configuration

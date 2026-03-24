@@ -120,3 +120,21 @@ snapper_current_desc() {
     row=$(snapper_get_row "${num}")
     _parse_field "${row}" 7
 }
+
+# ── Timeline configuration ────────────────────────────────────────────────
+
+# Read timeline keys from get-config output; returns KEY=VALUE lines
+snapper_get_timeline() {
+    _snapper get-config 2>/dev/null \
+        | awk -F'│' '/TIMELINE/ {
+            key=$1; val=$2
+            gsub(/^[[:space:]]+|[[:space:]]+$/, "", key)
+            gsub(/^[[:space:]]+|[[:space:]]+$/, "", val)
+            print key "=" val
+        }' || true
+}
+
+snapper_set_timeline() {
+    # $@ — KEY=VALUE pairs
+    _snapper set-config "$@"
+}

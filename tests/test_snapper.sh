@@ -58,6 +58,8 @@ case "\${1:-}" in
     delete)         echo "Deleted snapshot \${2:-}." ;;
     modify)         echo "Modified snapshot." ;;
     status)         echo "M /etc/fstab"; echo "M /etc/hostname" ;;
+    get-config)     printf 'Key                    │ Value\n-----------------------│------\nTIMELINE_CREATE        │ yes\nTIMELINE_LIMIT_HOURLY  │ 8\nTIMELINE_LIMIT_DAILY   │ 6\nTIMELINE_LIMIT_WEEKLY  │ 0\nTIMELINE_LIMIT_MONTHLY │ 11\nTIMELINE_LIMIT_YEARLY  │ 1\n' ;;
+    set-config)     echo "Set config." ;;
     *)              echo "mock snapper: unknown command '\$1'" >&2; exit 1 ;;
 esac
 MOCK
@@ -132,6 +134,15 @@ assert_contains "snapper_delete calls delete" "Deleted" "${output}"
 # 11. snapper_create calls snapper create
 output=$(snapper_create "test snapshot" 2>&1)
 assert_contains "snapper_create calls create" "Created" "${output}"
+
+# 12. snapper_get_timeline returns TIMELINE keys
+timeline=$(snapper_get_timeline)
+assert_contains "get_timeline returns TIMELINE_CREATE"       "TIMELINE_CREATE=yes"   "${timeline}"
+assert_contains "get_timeline returns TIMELINE_LIMIT_HOURLY" "TIMELINE_LIMIT_HOURLY=8" "${timeline}"
+
+# 13. snapper_set_timeline calls set-config
+output=$(snapper_set_timeline "TIMELINE_CREATE=no" 2>&1)
+assert_contains "snapper_set_timeline calls set-config" "Set config" "${output}"
 
 # ── Cleanup ───────────────────────────────────────────────────────────────
 

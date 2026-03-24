@@ -57,6 +57,7 @@ This ensures `--config <name>` is injected consistently for every snapper invoca
 | `__preview__ <num>` | `--preview` | Calls `bootstrap` then `snapper_get_info()` and exits |
 | `__list__` | `ctrl-r:reload(…)` | Calls `bootstrap` then `snapper_list_formatted()` and exits |
 | `__create__` | `ctrl-n:execute(…)` | Calls `bootstrap` then `ui_create()` and exits; fzf then reloads via `__list__` |
+| `__timeline__` | `ctrl-t:execute(…)` | Calls `bootstrap` then `ui_timeline()` and exits |
 
 Each subcommand calls `bootstrap` first to ensure `SUDO_CMD` and config are initialised in the subprocess — without this, `set -euo pipefail` aborts on the unbound `${SUDO_CMD}` variable.
 
@@ -76,7 +77,7 @@ There is intentionally no caching layer. Snapper list output is fast (millisecon
 - All snapper calls use `|| true` where a non-zero exit is expected (e.g. `grep` no-match).
 - Mutating operations (`create`, `delete`, `modify`) are wrapped in `if … then … else show_error …` blocks.
 - Missing dependencies are caught at install time: the `install` script detects missing `fzf`/`snapper`, prompts the user, and installs via the detected package manager (`pacman`, `dnf`, `apt`, `zypper`). If no supported PM is found it exits with an unsupported error.
-- fzf subcommand subprocesses (`__create__`, `__list__`, `__preview__`) call `bootstrap` before doing any work to ensure `SUDO_CMD` is always bound.
+- fzf subcommand subprocesses (`__create__`, `__list__`, `__preview__`, `__timeline__`) call `bootstrap` before doing any work to ensure `SUDO_CMD` is always bound.
 
 ## Testing
 
