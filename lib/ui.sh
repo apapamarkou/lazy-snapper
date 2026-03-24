@@ -36,8 +36,30 @@ pick_config() {
         || true)
 
     if [[ -z "${configs}" ]]; then
-        show_error "No snapper configs found. Is snapper configured?"
-        return 1
+        clear
+        echo -e "${C_BOLD}${C_YELLOW}No snapper configs found.${C_RESET}\n"
+        echo -e "Create default configs for ${C_BOLD}root (/)${C_RESET} and ${C_BOLD}home (/home)${C_RESET}?"
+        echo -e "${C_DIM}This runs: snapper create-config / and snapper create-config /home${C_RESET}\n"
+        printf "  Proceed? [y/N]: "
+        local ans
+        read -r ans < /dev/tty
+        if [[ ! "$ans" =~ ^[Yy]$ ]]; then
+            show_error "No snapper configs available. Configure snapper manually and restart."
+            return 1
+        fi
+        local failed=()
+        ${SUDO_CMD} snapper --config root create-config / 2>/dev/null || failed+=("root")
+        ${SUDO_CMD} snapper --config home create-config /home 2>/dev/null || failed+=("home")
+        if [[ ${#failed[@]} -gt 0 ]]; then
+            show_error "Failed to create config(s): ${failed[*]}. Check that the subvolumes exist."
+            [[ ${#failed[@]} -eq 2 ]] && return 1
+        fi
+        configs=$(${SUDO_CMD} snapper list-configs 2>/dev/null \
+            | tail -n +3 \
+            | grep -v '^[[:space:]]*─' \
+            | awk '{gsub(/^[[:space:]]+|[[:space:]]+$/, "", $1); if ($1 != "") print $1}' \
+            || true)
+        [[ -z "${configs}" ]] && { show_error "Still no configs found after creation attempt."; return 1; }
     fi
 
     # If only one config exists, select it automatically
