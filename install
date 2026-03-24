@@ -16,6 +16,64 @@ fi
 
 _green()  { echo -e "\033[0;32m$*\033[0m"; }
 _yellow() { echo -e "\033[0;33m$*\033[0m"; }
+_red()    { echo -e "\033[0;31m$*\033[0m"; }
+
+# ── Dependency check ──────────────────────────────────────────────────────
+
+_detect_pm() {
+    for pm in pacman dnf apt zypper; do
+        command -v "$pm" &>/dev/null && { echo "$pm"; return; }
+    done
+    echo ""
+}
+
+_install_pkgs() {
+    local pm="$1"; shift
+    case "$pm" in
+        pacman) sudo pacman -S --noconfirm "$@" ;;
+        dnf)    sudo dnf install -y "$@" ;;
+        apt)    sudo apt-get install -y "$@" ;;
+        zypper) sudo zypper install -y "$@" ;;
+    esac
+}
+
+# Package names per manager: fzf snapper
+declare -A PKG_NAMES=(
+    [pacman_fzf]=fzf      [pacman_snapper]=snapper
+    [dnf_fzf]=fzf         [dnf_snapper]=snapper
+    [apt_fzf]=fzf         [apt_snapper]=snapper
+    [zypper_fzf]=fzf      [zypper_snapper]=snapper
+)
+
+missing=()
+for dep in fzf snapper; do
+    command -v "$dep" &>/dev/null || missing+=("$dep")
+done
+
+if [[ ${#missing[@]} -gt 0 ]]; then
+    echo ""
+    _yellow "  Missing dependencies: ${missing[*]}"
+    printf "  Install them now? [y/N]: "
+    read -rsn1 ans; echo ""
+    if [[ "$ans" =~ ^[Yy]$ ]]; then
+        pm=$(_detect_pm)
+        if [[ -z "$pm" ]]; then
+            _red "  ✗ No supported package manager found (pacman/dnf/apt/zypper)."
+            _red "    Install ${missing[*]} manually and re-run the installer."
+            exit 1
+        fi
+        pkgs=()
+        for dep in "${missing[@]}"; do
+            pkgs+=("${PKG_NAMES[${pm}_${dep}]:-$dep}")
+        done
+        _yellow "  Installing ${pkgs[*]} via $pm..."
+        _install_pkgs "$pm" "${pkgs[@]}" || { _red "  ✗ Installation failed."; exit 1; }
+        _green "  ✓ Dependencies installed."
+    else
+        _red "  Aborted. Install ${missing[*]} manually and re-run."
+        exit 1
+    fi
+fi
 
 echo ""
 _green "Installing lazy-snapper..."
