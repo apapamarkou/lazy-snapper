@@ -22,24 +22,25 @@ _red()    { echo -e "\033[0;31m$*\033[0m"; }
 
 _detect_pm() {
     for pm in pacman dnf apt zypper; do
-        command -v "$pm" &>/dev/null && { echo "$pm"; return; }
+        command -v "${pm}" &>/dev/null && { echo "${pm}"; return; }
     done
     echo ""
 }
 
 _install_pkgs() {
     local pm="$1"; shift
-    case "$pm" in
+    case "${pm}" in
         pacman) sudo pacman -S --noconfirm "$@" ;;
         dnf)    sudo dnf install -y "$@" ;;
         apt)    sudo apt-get install -y "$@" ;;
         zypper) sudo zypper install -y "$@" ;;
+        *)      _red "  ✗ Unsupported package manager: ${pm}"; exit 1 ;;
     esac
 }
 
 missing=()
 for dep in fzf snapper; do
-    command -v "$dep" &>/dev/null || missing+=("$dep")
+    command -v "${dep}" &>/dev/null || missing+=("${dep}")
 done
 
 if [[ ${#missing[@]} -gt 0 ]]; then
@@ -47,15 +48,15 @@ if [[ ${#missing[@]} -gt 0 ]]; then
     _yellow "  Missing dependencies: ${missing[*]}"
     printf "  Install them now? [y/N]: "
     read -r ans < /dev/tty
-    if [[ "$ans" =~ ^[Yy]$ ]]; then
+    if [[ "${ans}" =~ ^[Yy]$ ]]; then
         pm=$(_detect_pm)
-        if [[ -z "$pm" ]]; then
+        if [[ -z "${pm}" ]]; then
             _red "  ✗ No supported package manager found (pacman/dnf/apt/zypper)."
             _red "    Install ${missing[*]} manually and re-run the installer."
             exit 1
         fi
-        _yellow "  Installing ${missing[*]} via $pm..."
-        _install_pkgs "$pm" "${missing[@]}" || { _red "  ✗ Installation failed."; exit 1; }
+        _yellow "  Installing ${missing[*]} via ${pm}..."
+        _install_pkgs "${pm}" "${missing[@]}"
         _green "  ✓ Dependencies installed."
     else
         _red "  Aborted. Install ${missing[*]} manually and re-run."

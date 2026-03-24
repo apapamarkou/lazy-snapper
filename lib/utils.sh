@@ -62,8 +62,8 @@ check_dependencies() {
 
     if [[ ${#missing[@]} -gt 0 ]]; then
         ERROR_MSG="Missing required dependencies: ${missing[*]}"
-        log_error "$ERROR_MSG"
-        notify-send "Lazy Snapper" "$ERROR_MSG"
+        log_error "${ERROR_MSG}"
+        notify-send "Lazy Snapper" "${ERROR_MSG}"
         log_error "Install them and try again."
         exit 1
     fi

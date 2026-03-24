@@ -37,9 +37,6 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LAZY_LIBDIR="${REPO_ROOT}/lib"
 export LAZY_LIBDIR
 
-# Stub resolve_sudo so sourcing utils.sh doesn't fail in CI
-resolve_sudo() { export SUDO_CMD=""; }
-
 # Pre-set LAZY_CONFIG_FILE so core.sh doesn't load a real config
 LAZY_CONFIG_FILE="/tmp/lazy-snapper-no-config-$$"
 
@@ -47,6 +44,9 @@ LAZY_CONFIG_FILE="/tmp/lazy-snapper-no-config-$$"
 source "${LAZY_LIBDIR}/utils.sh"
 # shellcheck source=../lib/core.sh
 source "${LAZY_LIBDIR}/core.sh"
+
+# Stub resolve_sudo AFTER sourcing so it overrides the real implementation
+resolve_sudo() { export SUDO_CMD=""; }
 
 # ── Tests ─────────────────────────────────────────────────────────────────
 
@@ -93,6 +93,10 @@ assert_eq "snapper_config_flag empty when unset" "" "${result}"
 LAZY_SNAPPER_CONFIG="home"
 result=$(snapper_config_flag)
 assert_eq "snapper_config_flag with value" "--config home" "${result}"
+
+# 7. resolve_sudo sets SUDO_CMD to empty when already root-stubbed
+resolve_sudo
+assert_eq "SUDO_CMD is set after resolve_sudo stub" "" "${SUDO_CMD}"
 
 # ── Summary ───────────────────────────────────────────────────────────────
 

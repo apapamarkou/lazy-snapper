@@ -43,7 +43,7 @@ pick_config() {
         printf "  Proceed? [y/N]: "
         local ans
         read -r ans < /dev/tty
-        if [[ ! "$ans" =~ ^[Yy]$ ]]; then
+        if [[ ! "${ans}" =~ ^[Yy]$ ]]; then
             show_error "No snapper configs available. Configure snapper manually and restart."
             return 1
         fi

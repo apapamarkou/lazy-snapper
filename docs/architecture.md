@@ -27,8 +27,9 @@ bin/lazy-snapper
 ```
 launch
   └── pick_config()          — fzf list of snapper configs (skipped if -c passed or only one exists)
+        │                       if no configs found: prompt to create default root+home configs
         └── browse_and_manage()  — persistent fzf snapshot browser (newest first via --tac)
-              └── action_menu()  — per-snapshot actions (Info, Diff, Revert, Modify, Delete)
+              └── action_menu()  — per-snapshot actions (Info, Diff, Modify, Delete)
 ```
 
 ## snapper Integration
@@ -53,9 +54,11 @@ This ensures `--config <name>` is injected consistently for every snapper invoca
 
 | Subcommand | Called by | Does |
 |------------|-----------|------|
-| `__preview__ <num>` | `--preview` | Runs `snapper_get_info()` and exits |
-| `__list__` | `ctrl-r:reload(…)` | Runs `snapper_list_formatted()` and exits |
-| `__create__` | `ctrl-n:execute(…)` | Runs `ui_create()` and exits; fzf then reloads via `__list__` |
+| `__preview__ <num>` | `--preview` | Calls `bootstrap` then `snapper_get_info()` and exits |
+| `__list__` | `ctrl-r:reload(…)` | Calls `bootstrap` then `snapper_list_formatted()` and exits |
+| `__create__` | `ctrl-n:execute(…)` | Calls `bootstrap` then `ui_create()` and exits; fzf then reloads via `__list__` |
+
+Each subcommand calls `bootstrap` first to ensure `SUDO_CMD` and config are initialised in the subprocess — without this, `set -euo pipefail` aborts on the unbound `${SUDO_CMD}` variable.
 
 Using `bash ${LAZY_BIN}` (rather than calling `lib/snapper.sh` directly) means the subprocess sources all modules and inherits `LAZY_SNAPPER_CONFIG`, `SUDO_CMD`, and all functions correctly. This also avoids needing `lib/snapper.sh` to be executable.
 
@@ -71,8 +74,9 @@ There is intentionally no caching layer. Snapper list output is fast (millisecon
 
 - `set -euo pipefail` is active in all scripts.
 - All snapper calls use `|| true` where a non-zero exit is expected (e.g. `grep` no-match).
-- Mutating operations (`create`, `delete`, `revert`, `modify`) are wrapped in `if … then … else show_error …` blocks.
-- Missing dependencies are caught at startup by `check_dependencies()`.
+- Mutating operations (`create`, `delete`, `modify`) are wrapped in `if … then … else show_error …` blocks.
+- Missing dependencies are caught at install time: the `install` script detects missing `fzf`/`snapper`, prompts the user, and installs via the detected package manager (`pacman`, `dnf`, `apt`, `zypper`). If no supported PM is found it exits with an unsupported error.
+- fzf subcommand subprocesses (`__create__`, `__list__`, `__preview__`) call `bootstrap` before doing any work to ensure `SUDO_CMD` is always bound.
 
 ## Testing
 

@@ -1,5 +1,21 @@
 # Usage Guide
 
+## Installation
+
+The `install` script handles everything:
+
+1. Checks for required dependencies (`fzf`, `snapper`).
+2. If any are missing, prompts `[y/N]` to install them automatically.
+3. Detects the system package manager (`pacman`, `dnf`, `apt`, `zypper`) and installs missing packages.
+4. If no supported package manager is found, exits with an error asking for manual installation.
+5. Copies files, symlinks the binary to `~/.local/bin/snapshots`, writes a `.desktop` entry to `~/.local/share/applications/`, and scaffolds `~/.config/lazy-snapper/config`.
+
+```bash
+bash install
+# or via curl:
+curl -sSL https://raw.githubusercontent.com/apapamarkou/lazy-snapper/main/install | bash
+```
+
 ## Starting lazy-snapper
 
 ```bash
@@ -19,6 +35,7 @@ On launch, lazy-snapper lists all available snapper configs and lets you pick on
 
 - If only one config exists it is selected automatically with no prompt.
 - Pass `-c <name>` to skip the picker entirely.
+- If **no configs exist**, lazy-snapper offers to create default `root` (`/`) and `home` (`/home`) configs automatically. If a subvolume doesn't exist the corresponding config is skipped with a warning.
 
 ## Step 2 — Browse & Manage
 

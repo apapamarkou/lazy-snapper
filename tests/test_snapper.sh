@@ -51,12 +51,14 @@ MOCK_BIN_DIR=$(mktemp -d)
 cat > "${MOCK_BIN_DIR}/snapper" <<MOCK
 #!/usr/bin/env bash
 case "\${1:-}" in
-    list)       cat "${REPO_ROOT}/tests/fixtures/snapper_list.txt" ;;
-    create)     echo "Created snapshot." ;;
-    delete)     echo "Deleted snapshot \${2:-}." ;;
-    modify)     echo "Modified snapshot." ;;
-    status)     echo "M /etc/fstab"; echo "M /etc/hostname" ;;
-    *)          echo "mock snapper: unknown command '\$1'" >&2; exit 1 ;;
+    list)           cat "${REPO_ROOT}/tests/fixtures/snapper_list.txt" ;;
+    list-configs)   printf 'Config | Subvolume\n------\n root  | /\n home  | /home\n' ;;
+    create-config)  echo "Created config." ;;
+    create)         echo "Created snapshot." ;;
+    delete)         echo "Deleted snapshot \${2:-}." ;;
+    modify)         echo "Modified snapshot." ;;
+    status)         echo "M /etc/fstab"; echo "M /etc/hostname" ;;
+    *)              echo "mock snapper: unknown command '\$1'" >&2; exit 1 ;;
 esac
 MOCK
 chmod +x "${MOCK_BIN_DIR}/snapper"
@@ -126,6 +128,10 @@ assert_eq "current_desc for snapshot 4" "manual backup" "${desc}"
 # 10. snapper_delete calls snapper delete
 output=$(snapper_delete "1" 2>&1)
 assert_contains "snapper_delete calls delete" "Deleted" "${output}"
+
+# 11. snapper_create calls snapper create
+output=$(snapper_create "test snapshot" 2>&1)
+assert_contains "snapper_create calls create" "Created" "${output}"
 
 # ── Cleanup ───────────────────────────────────────────────────────────────
 
