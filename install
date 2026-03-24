@@ -37,14 +37,6 @@ _install_pkgs() {
     esac
 }
 
-# Package names per manager: fzf snapper
-declare -A PKG_NAMES=(
-    [pacman_fzf]=fzf      [pacman_snapper]=snapper
-    [dnf_fzf]=fzf         [dnf_snapper]=snapper
-    [apt_fzf]=fzf         [apt_snapper]=snapper
-    [zypper_fzf]=fzf      [zypper_snapper]=snapper
-)
-
 missing=()
 for dep in fzf snapper; do
     command -v "$dep" &>/dev/null || missing+=("$dep")
@@ -62,12 +54,8 @@ if [[ ${#missing[@]} -gt 0 ]]; then
             _red "    Install ${missing[*]} manually and re-run the installer."
             exit 1
         fi
-        pkgs=()
-        for dep in "${missing[@]}"; do
-            pkgs+=("${PKG_NAMES[${pm}_${dep}]:-$dep}")
-        done
-        _yellow "  Installing ${pkgs[*]} via $pm..."
-        _install_pkgs "$pm" "${pkgs[@]}" || { _red "  ✗ Installation failed."; exit 1; }
+        _yellow "  Installing ${missing[*]} via $pm..."
+        _install_pkgs "$pm" "${missing[@]}" || { _red "  ✗ Installation failed."; exit 1; }
         _green "  ✓ Dependencies installed."
     else
         _red "  Aborted. Install ${missing[*]} manually and re-run."
