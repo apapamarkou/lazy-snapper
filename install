@@ -46,7 +46,7 @@ if [[ ${#missing[@]} -gt 0 ]]; then
     echo ""
     _yellow "  Missing dependencies: ${missing[*]}"
     printf "  Install them now? [y/N]: "
-    read -rsn1 ans; echo ""
+    read -r ans < /dev/tty
     if [[ "$ans" =~ ^[Yy]$ ]]; then
         pm=$(_detect_pm)
         if [[ -z "$pm" ]]; then
