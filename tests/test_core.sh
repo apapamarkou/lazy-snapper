@@ -98,6 +98,10 @@ assert_eq "snapper_config_flag with value" "--config home" "${result}"
 resolve_sudo
 assert_eq "SUDO_CMD is set after resolve_sudo stub" "" "${SUDO_CMD}"
 
+# 8. pkg symlink exists and points to bin/lazy-snapper
+pkg_target=$(readlink "${REPO_ROOT}/pkg" 2>/dev/null || true)
+assert_eq "pkg symlink points to bin/lazy-snapper" "bin/lazy-snapper" "${pkg_target}"
+
 # ── Summary ───────────────────────────────────────────────────────────────
 
 echo ""

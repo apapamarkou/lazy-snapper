@@ -96,9 +96,9 @@ browse_and_manage() {
     local header_text
     header_text=$(printf '%s\n%s\n%s\n%s' \
         "$(_header)" \
-        "  Config: ${LAZY_SNAPPER_CONFIG}" \
+        "  Config: ${LAZY_SNAPPER_CONFIG} - [Ctrl-N] new  [Ctrl-R] reload" \
         "" \
-        "  #     │ Date/Time            │ Type   │ Description    [Ctrl-N] new  [Ctrl-R] reload")
+        "#     │ Date/Time                       │ Type   │ Description    ")
 
     while true; do
         local selected
